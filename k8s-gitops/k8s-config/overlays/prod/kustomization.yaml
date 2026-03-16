@@ -9,3 +9,9 @@ resources:
   - ../../base/database
   - ../../base/messaging
   - ../../base/app
+
+patches:
+  - path: service-patch.yaml
+    target:
+      kind: Service
+      name: local-dev-app
