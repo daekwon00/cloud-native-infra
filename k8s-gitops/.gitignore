@@ -1,0 +1,17 @@
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+*.tfvars
+!*.tfvars.example
+crash.log
+
+# General
+.DS_Store
+.idea/
+*.iml
+
+# Secrets
+*.pem
+*.key
+kubeconfig*
