@@ -1,4 +1,4 @@
-FROM eclipse-temurin:21-jdk-noble AS build
+FROM eclipse-temurin:25-jdk-noble AS build
 
 WORKDIR /app
 
@@ -9,7 +9,7 @@ RUN ./gradlew dependencies --no-daemon || true
 COPY src/ src/
 RUN ./gradlew bootJar --no-daemon
 
-FROM eclipse-temurin:21-jre-noble
+FROM eclipse-temurin:25-jre-noble
 
 WORKDIR /app
 
