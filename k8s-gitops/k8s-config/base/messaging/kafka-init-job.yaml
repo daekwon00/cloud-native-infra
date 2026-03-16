@@ -1,0 +1,29 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kafka-init
+  labels:
+    app: kafka-init
+spec:
+  backoffLimit: 3
+  template:
+    metadata:
+      labels:
+        app: kafka-init
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: kafka-init
+          image: confluentinc/cp-kafka:7.6.0
+          command:
+            - /bin/sh
+            - -c
+            - |
+              echo "Waiting for Kafka to be ready..."
+              cub kafka-ready -b kafka:9092 1 60
+              kafka-topics --create --if-not-exists \
+                --topic demo-topic \
+                --partitions 1 \
+                --replication-factor 1 \
+                --bootstrap-server kafka:9092
+              echo "Topic created successfully"
