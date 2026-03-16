@@ -50,7 +50,7 @@ spec:
     - name: app-alerts
       rules:
         - alert: SpringBootDown
-          expr: up{job="local-dev-app"} == 0
+          expr: absent(up{job="local-dev-app"} == 1)
           for: 1m
           labels:
             severity: critical
