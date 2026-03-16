@@ -1,0 +1,68 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: custom-alerts
+  namespace: monitoring
+  labels:
+    release: prometheus
+spec:
+  groups:
+    - name: pod-alerts
+      rules:
+        - alert: PodCrashLooping
+          expr: rate(kube_pod_container_status_restarts_total[5m]) * 300 > 3
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Pod {{ $labels.namespace }}/{{ $labels.pod }} is crash looping"
+            description: "Pod {{ $labels.pod }} in namespace {{ $labels.namespace }} has restarted more than 3 times in the last 5 minutes."
+
+        - alert: PodNotReady
+          expr: kube_pod_status_ready{condition="true"} == 0
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Pod {{ $labels.namespace }}/{{ $labels.pod }} is not ready"
+            description: "Pod {{ $labels.pod }} in namespace {{ $labels.namespace }} has been not ready for 5 minutes."
+
+    - name: resource-alerts
+      rules:
+        - alert: HighMemoryUsage
+          expr: container_memory_working_set_bytes{container!=""} / container_spec_memory_limit_bytes{container!=""} > 0.9
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Container {{ $labels.container }} memory usage > 90%"
+            description: "Container {{ $labels.container }} in pod {{ $labels.pod }} is using more than 90% of its memory limit."
+
+        - alert: HighCPUUsage
+          expr: rate(container_cpu_usage_seconds_total{container!=""}[5m]) / container_spec_cpu_quota{container!=""} * 100000 > 80
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Container {{ $labels.container }} CPU usage > 80%"
+            description: "Container {{ $labels.container }} in pod {{ $labels.pod }} is using more than 80% of its CPU limit."
+
+    - name: app-alerts
+      rules:
+        - alert: SpringBootDown
+          expr: up{job="local-dev-app"} == 0
+          for: 1m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Spring Boot app is down"
+            description: "Spring Boot application has been unreachable for 1 minute."
+
+        - alert: KafkaExporterDown
+          expr: up{job=~".*kafka-exporter.*"} == 0
+          for: 2m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Kafka Exporter is down"
+            description: "Kafka Exporter has been unreachable for 2 minutes."

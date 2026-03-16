@@ -1,0 +1,27 @@
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  name: slack-alert
+  namespace: monitoring
+  labels:
+    release: prometheus
+spec:
+  route:
+    receiver: slack
+    groupBy: ["alertname", "namespace"]
+    groupWait: 30s
+    groupInterval: 5m
+    repeatInterval: 1h
+  receivers:
+    - name: slack
+      slackConfigs:
+        - apiURL:
+            name: slack-webhook
+            key: webhook-url
+          channel: "#alerts"
+          sendResolved: true
+          title: '[{{ .Status | toUpper }}] {{ .CommonLabels.alertname }}'
+          text: >-
+            *Namespace:* {{ .CommonLabels.namespace }}
+            *Pod:* {{ .CommonLabels.pod }}
+            *Description:* {{ .CommonAnnotations.description }}
