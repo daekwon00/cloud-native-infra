@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-imports
+  namespace: monitoring
+  labels:
+    grafana_dashboard: "1"
+data:
+  dashboards.json: |
+    {
+      "dashboard_imports": [
+        {"id": 19004, "name": "Spring Boot Statistics"},
+        {"id": 7589, "name": "Kafka Exporter Overview"},
+        {"id": 9628, "name": "PostgreSQL Database"}
+      ]
+    }
