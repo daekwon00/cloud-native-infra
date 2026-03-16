@@ -1,1 +1,26 @@
-/docs
+# General
+.DS_Store
+.idea/
+*.iml
+
+# Local dev env
+.env
+.gradle/
+build/
+*.jar
+*.class
+data/
+logs/
+
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+*.tfvars
+!*.tfvars.example
+crash.log
+
+# Secrets
+*.pem
+*.key
+kubeconfig*
